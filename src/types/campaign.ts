@@ -1,4 +1,5 @@
 export type CampaignCategory = "Environment" | "Education" | "Community";
+export type AdChannel = "Facebook" | "Instagram" | "YouTube" | "Reddit" | "LinkedIn" | "X" | "TikTok" | "Pinterest";
 
 export type Campaign = {
   id: string;
@@ -30,6 +31,11 @@ export type CampaignDraft = {
   adHeadline: string;
   adDescription: string;
   adImageUri: string;
+  fundingGoal: string;
+  fundingWindow: string;
+  targetAudience: string;
+  audienceRelevance: string;
+  adChannels: AdChannel[];
 };
 
 export type CampaignFieldErrors = Partial<
@@ -39,7 +45,9 @@ export type CampaignFieldErrors = Partial<
     | "organizer"
     | "shortDescription"
     | "fullDescription"
-    | "coverImageUri",
+    | "coverImageUri"
+    | "fundingGoal"
+    | "adChannels",
     string
   >
 >;
@@ -62,4 +70,9 @@ export const INITIAL_CAMPAIGN_DRAFT: CampaignDraft = {
   adHeadline: "",
   adDescription: "",
   adImageUri: "",
+  fundingGoal: "100",
+  fundingWindow: "30 days",
+  targetAudience: "",
+  audienceRelevance: "",
+  adChannels: [],
 };

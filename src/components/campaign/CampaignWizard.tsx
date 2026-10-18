@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CampaignVisualsStep } from "./steps/CampaignVisuals";
+import { ReachStep } from "./steps/Reach";
 import { StoryStep } from "./steps/Story";
 
 function ComingSoonStep({ step }: { step: number }) {
@@ -55,31 +56,49 @@ export function CampaignWizard() {
         coverImageUri: draft.coverImageUri ? "" : "Choose a cover image to continue.",
       };
     }
+    if (step === 3) {
+      const goal = Number(draft.fundingGoal);
+      return {
+        fundingGoal: Number.isFinite(goal) && goal >= 100 ? "" : "Enter a funding goal of at least $100.",
+        adChannels: draft.adChannels.length > 0 ? "" : "Pick at least one platform to run your ad on.",
+      };
+    }
     return {};
   }, [draft, showErrors, step]);
 
   const hasBasicsErrors = !draft.title.trim() || !draft.category || !draft.organizer.trim();
   const hasStoryErrors = !draft.shortDescription.trim() || !draft.fullDescription.trim();
   const hasVisualsErrors = !draft.coverImageUri;
+  const parsedFundingGoal = Number(draft.fundingGoal);
+  const hasReachErrors =
+      !draft.fundingGoal.trim() ||
+      !Number.isFinite(parsedFundingGoal) ||
+      parsedFundingGoal < 100 ||
+      draft.adChannels.length === 0;
 
   const updateDraft = <K extends keyof CampaignDraft>(key: K, value: CampaignDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
   const continueStep = () => {
-   if (step === 0 || step === 1 || step === 2) {
+   if (step === 0 || step === 1 || step === 2 || step === 3) {
       setShowErrors(true);
+
       if (
         (step === 0 && hasBasicsErrors) ||
         (step === 1 && hasStoryErrors) ||
-        (step === 2 && hasVisualsErrors)
+        (step === 2 && hasVisualsErrors) ||
+        (step === 3 && hasReachErrors)
       ) return;
+
     }
+
     if (step < CAMPAIGN_STEPS.length - 1) {
       setShowErrors(false);
       setStep((current) => current + 1);
       return;
     }
+
     Alert.alert("Ready for review", "The final review and submission behavior will be implemented in Step 5.");
   };
 
@@ -149,6 +168,8 @@ export function CampaignWizard() {
             <StoryStep draft={draft} onChange={updateDraft} errors={errors} />
           ) : step === 2 ? (
             <CampaignVisualsStep draft={draft} onChange={updateDraft} errors={errors} />
+          ) : step === 3 ? (
+            <ReachStep draft={draft} onChange={updateDraft} errors={errors} />
           ) : (
             <ComingSoonStep step={step} />
           )}
