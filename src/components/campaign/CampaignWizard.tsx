@@ -7,9 +7,11 @@ import { INITIAL_CAMPAIGN_DRAFT, type CampaignDraft, type CampaignFieldErrors } 
 import { useMemo, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CampaignVisualsStep } from "./steps/CampaignVisuals";
 import { StoryStep } from "./steps/Story";
 
 function ComingSoonStep({ step }: { step: number }) {
+
   const descriptions = [
     "Tell the story behind your campaign and the impact you want to make.",
     "Add campaign imagery and supporting visual details.",
@@ -48,19 +50,30 @@ export function CampaignWizard() {
         fullDescription: draft.fullDescription.trim() ? "" : "Tell the full story behind your campaign.",
       };
     }
+    if (step === 2) {
+      return {
+        coverImageUri: draft.coverImageUri ? "" : "Choose a cover image to continue.",
+      };
+    }
     return {};
   }, [draft, showErrors, step]);
 
   const hasBasicsErrors = !draft.title.trim() || !draft.category || !draft.organizer.trim();
+  const hasStoryErrors = !draft.shortDescription.trim() || !draft.fullDescription.trim();
+  const hasVisualsErrors = !draft.coverImageUri;
 
   const updateDraft = <K extends keyof CampaignDraft>(key: K, value: CampaignDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
   const continueStep = () => {
-    if (step === 0) {
+   if (step === 0 || step === 1 || step === 2) {
       setShowErrors(true);
-      if (hasBasicsErrors) return;
+      if (
+        (step === 0 && hasBasicsErrors) ||
+        (step === 1 && hasStoryErrors) ||
+        (step === 2 && hasVisualsErrors)
+      ) return;
     }
     if (step < CAMPAIGN_STEPS.length - 1) {
       setShowErrors(false);
@@ -106,7 +119,7 @@ export function CampaignWizard() {
             <Text className="text-3xl font-bold tracking-tight" style={{ color: campaignPalette.ink }}>Let's build your big idea</Text>
           </View>
           <CampaignStepIndicator step={step} />
-         {step === 1 ? (
+          {step > 0 ? (
             <Pressable
               onPress={() => Alert.alert(
                 "Start over?",
@@ -134,6 +147,8 @@ export function CampaignWizard() {
             <BasicsStep draft={draft} onChange={updateDraft} errors={errors} />
           ) : step === 1 ? (
             <StoryStep draft={draft} onChange={updateDraft} errors={errors} />
+          ) : step === 2 ? (
+            <CampaignVisualsStep draft={draft} onChange={updateDraft} errors={errors} />
           ) : (
             <ComingSoonStep step={step} />
           )}

@@ -22,6 +22,14 @@ export type CampaignDraft = {
   fullDescription: string;
   sources: string;
   whyBackersCare: string;
+  coverImageUri: string;
+  coverImageName: string;
+  useSlideshow: boolean;
+  slideshowImageUris: string[];
+  useCustomAdVisuals: boolean;
+  adHeadline: string;
+  adDescription: string;
+  adImageUri: string;
 };
 
 export type CampaignFieldErrors = Partial<
@@ -30,7 +38,8 @@ export type CampaignFieldErrors = Partial<
     | "category"
     | "organizer"
     | "shortDescription"
-    | "fullDescription",
+    | "fullDescription"
+    | "coverImageUri",
     string
   >
 >;
@@ -45,4 +54,12 @@ export const INITIAL_CAMPAIGN_DRAFT: CampaignDraft = {
   fullDescription: "",
   sources: "",
   whyBackersCare: "",
+  coverImageUri: "",
+  coverImageName: "",
+  useSlideshow: false,
+  slideshowImageUris: [],
+  useCustomAdVisuals: false,
+  adHeadline: "",
+  adDescription: "",
+  adImageUri: "",
 };
