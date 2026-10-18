@@ -11,3 +11,23 @@ export type Campaign = {
   image: string;
   tagline?: string;
 };
+
+export type CampaignDraft = {
+  title: string;
+  category: CampaignCategory | "";
+  organizer: string;
+  aiPrompt: string;
+  generateCover: boolean;
+};
+
+export type CampaignFieldErrors = Partial<
+  Record<"title" | "category" | "organizer", string>
+>;
+
+export const INITIAL_CAMPAIGN_DRAFT: CampaignDraft = {
+  title: "",
+  category: "",
+  organizer: "",
+  aiPrompt: "",
+  generateCover: false,
+};
