@@ -2,23 +2,33 @@ import { Text } from "@/components/ui/text";
 import { Pressable, View } from "react-native";
 
 const ITEMS = [
-  { label: "Home", icon: "⌂", active: true },
+  { label: "Home", icon: "⌂" },
   { label: "Explore", icon: "⌕" },
   { label: "Create", icon: "+", create: true },
   { label: "Activity", icon: "◷" },
   { label: "Profile", icon: "○" },
 ] as const;
 
-export function HomeBottomNav({ onNavigate }: { onNavigate: (label: string) => void }) {
+type NavDestination = (typeof ITEMS)[number]["label"];
+
+export function HomeBottomNav({ 
+  active,
+  onNavigate 
+} : {
+  active: NavDestination; 
+  onNavigate: (label: string) => void;
+ }) {
   return (
     <View className="h-[68px] flex-row items-center justify-around border-t border-border bg-card px-1">
-      {ITEMS.map((item) => (
+      {ITEMS.map((item) => {
+        const isActive = item.label === active;
+        return (
         <Pressable
           key={item.label}
           accessibilityRole="button"
           accessibilityLabel={item.label}
-          accessibilityState={{ selected: "active" in item && item.active }}
-          onPress={() => item.label !== "Home" && onNavigate(item.label)}
+          accessibilityState={{ selected: isActive }}
+            onPress={() => onNavigate(item.label)}
           className="flex-1 items-center justify-center gap-0.5"
         >
           {"create" in item && item.create ? (
@@ -34,7 +44,8 @@ export function HomeBottomNav({ onNavigate }: { onNavigate: (label: string) => v
             {item.label}
           </Text>
         </Pressable>
-      ))}
+        );
+    })}
     </View>
   );
 }

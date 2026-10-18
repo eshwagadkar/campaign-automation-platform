@@ -1,6 +1,7 @@
 import { Text } from '@/components/ui/text';
 import type { CategoryFilter } from "@/constants/home";
 import { CAMPAIGNS, FEATURED_CAMPAIGN } from '@/data/campaigns';
+import { useRouter } from "expo-router";
 import { useMemo, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ import { ImpactSummary } from './ImpactSummary';
 import { SectionHeading } from './SectionHeading';
 
 export function HomeScreen() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("All");
   const[savedCampaigns, setSavedCampaigns] = useState<string[]>([]);
 
@@ -34,6 +36,19 @@ export function HomeScreen() {
         ? current.filter((savedId) => savedId !== id)
         : [...current, id],
     );
+  };
+
+   const navigate = (destination: string) => {
+    if (destination === "Home") return;
+    if (destination === "Explore") {
+      router.push("/explore");
+      return;
+    }
+    if (destination === "Create") {
+      router.push("/create");
+      return;
+    }
+    Alert.alert(destination, `${destination} will be available in a future update.`);
   };
 
   const showComingSoon = (flow: string) =>
@@ -102,12 +117,12 @@ export function HomeScreen() {
                         </View>
                     )}
 
-                    <CreateBanner onPress={() => showComingSoon("Create campaign")} />
+                    <CreateBanner onPress={() => router.push("/create")} />
                     <Text className="mb-2 mt-5 text-center text-[10px] text-muted-foreground">
                         Demo content · Campaign figures are illustrative
                     </Text>
                 </ScrollView>
-                <HomeBottomNav onNavigate={showComingSoon} />
+                <HomeBottomNav active="Home" onNavigate={navigate} />
             </View>
         </SafeAreaView>
     )
