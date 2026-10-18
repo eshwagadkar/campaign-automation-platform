@@ -7,6 +7,7 @@ import { INITIAL_CAMPAIGN_DRAFT, type CampaignDraft, type CampaignFieldErrors } 
 import { useMemo, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StoryStep } from "./steps/Story";
 
 function ComingSoonStep({ step }: { step: number }) {
   const descriptions = [
@@ -34,12 +35,21 @@ export function CampaignWizard() {
 
   const errors = useMemo<CampaignFieldErrors>(() => {
     if (!showErrors) return {};
-    return {
-      title: draft.title.trim() ? "" : "Enter a campaign title.",
-      category: draft.category ? "" : "Choose a category.",
-      organizer: draft.organizer.trim() ? "" : "Enter the person or organization behind this campaign.",
-    };
-  }, [draft, showErrors]);
+     if (step === 0) {
+      return {
+        title: draft.title.trim() ? "" : "Enter a campaign title.",
+        category: draft.category ? "" : "Choose a category.",
+        organizer: draft.organizer.trim() ? "" : "Enter the person or organization behind this campaign.",
+      };
+    }
+    if (step === 1) {
+      return {
+        shortDescription: draft.shortDescription.trim() ? "" : "Add a short campaign summary.",
+        fullDescription: draft.fullDescription.trim() ? "" : "Tell the full story behind your campaign.",
+      };
+    }
+    return {};
+  }, [draft, showErrors, step]);
 
   const hasBasicsErrors = !draft.title.trim() || !draft.category || !draft.organizer.trim();
 
@@ -96,8 +106,34 @@ export function CampaignWizard() {
             <Text className="text-3xl font-bold tracking-tight" style={{ color: campaignPalette.ink }}>Let's build your big idea</Text>
           </View>
           <CampaignStepIndicator step={step} />
+         {step === 1 ? (
+            <Pressable
+              onPress={() => Alert.alert(
+                "Start over?",
+                "This will clear all campaign details entered so far.",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Start over",
+                    style: "destructive",
+                    onPress: () => {
+                      setDraft(INITIAL_CAMPAIGN_DRAFT);
+                      setShowErrors(false);
+                      setStep(0);
+                    },
+                  },
+                ],
+              )}
+              className="self-start py-1"
+              accessibilityRole="button"
+            >
+              <Text className="text-xs underline" style={{ color: campaignPalette.muted }}>Start over</Text>
+            </Pressable>
+          ) : null}
           {step === 0 ? (
             <BasicsStep draft={draft} onChange={updateDraft} errors={errors} />
+          ) : step === 1 ? (
+            <StoryStep draft={draft} onChange={updateDraft} errors={errors} />
           ) : (
             <ComingSoonStep step={step} />
           )}

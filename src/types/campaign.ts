@@ -18,10 +18,21 @@ export type CampaignDraft = {
   organizer: string;
   aiPrompt: string;
   generateCover: boolean;
+  shortDescription: string;
+  fullDescription: string;
+  sources: string;
+  whyBackersCare: string;
 };
 
 export type CampaignFieldErrors = Partial<
-  Record<"title" | "category" | "organizer", string>
+  Record<
+    | "title"
+    | "category"
+    | "organizer"
+    | "shortDescription"
+    | "fullDescription",
+    string
+  >
 >;
 
 export const INITIAL_CAMPAIGN_DRAFT: CampaignDraft = {
@@ -30,4 +41,8 @@ export const INITIAL_CAMPAIGN_DRAFT: CampaignDraft = {
   organizer: "",
   aiPrompt: "",
   generateCover: false,
+  shortDescription: "",
+  fullDescription: "",
+  sources: "",
+  whyBackersCare: "",
 };
