@@ -1,5 +1,14 @@
-import { HomeScreen } from '@/components/home/HomeScreen'
+import { HomeScreen } from '@/components/home/HomeScreen';
+import { testSupabaseConnection } from "@/lib/test-supabase";
+import { useEffect } from "react";
 
 export default function Index() {
-  return <HomeScreen />
+
+  useEffect(() => {
+    testSupabaseConnection();
+  }, []);  
+
+  return (
+    <HomeScreen />
+  )
 }
